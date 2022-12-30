@@ -1,5 +1,7 @@
 package ru.itmentor.spring.boot_security.demo.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -11,68 +13,51 @@ import ru.itmentor.spring.boot_security.demo.service.UserService;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.List;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class AdminController {
 
     private final UserService userService;
-    private final RoleService roleService;
 
-    public AdminController(UserService userService, RoleService roleService) {
+    public AdminController(UserService userService) {
         this.userService = userService;
-        this.roleService = roleService;
     }
 
     @GetMapping
-    public String getUsersPage(ModelMap modelMap) {
-        User authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        modelMap.addAttribute("authenticatedUser", authenticatedUser);
-        modelMap.addAttribute("users", userService.getUsers());
-        modelMap.addAttribute("roles", roleService.findAllRoles());
-        modelMap.addAttribute("user", new User());
-
-        return "admin-page";
+    public ResponseEntity<List<User>> getUsers() {
+        return new ResponseEntity<>(userService.getUsers(), HttpStatus.FOUND);
     }
 
-    @PostMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
+        User user = userService.getUserById(id);
+
+        if (user == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        return new ResponseEntity<>(user, HttpStatus.FOUND);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
 
-        return "redirect:/admin";
+        return new ResponseEntity<>("User deleted", HttpStatus.OK);
     }
 
     @PostMapping("/create")
-    public String createNewUser(
-            @RequestParam("form_selected_roles") ArrayList<Long> selectedRolesID,
-            @ModelAttribute("user") @Valid User user, BindingResult bindingResult
-    ) {
-        String redirectTo = "/admin";
+    public ResponseEntity<User> createNewUser(@RequestBody User user) {
+        userService.createUser(user);
 
-        if (!bindingResult.hasErrors()) {
-            user.addAuthorities(roleService.findRolesByIDs(selectedRolesID));
-            userService.createUser(user);
-
-            redirectTo = "/admin";
-        }
-
-        return "redirect:" + redirectTo;
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/edit")
-    public String editUser(
-            @RequestParam("form_selected_roles") ArrayList<Long> selectedRolesID,
-            @ModelAttribute("user") @Valid User user,
-            BindingResult bindingResult
-    ) {
-        String redirectTo = "redirect:/admin";
+    @PutMapping("/edit")
+    public ResponseEntity<User> editUser(@RequestBody User user) {
+        userService.updateUser(user);
 
-        if (!bindingResult.hasErrors()) {
-            user.addAuthorities(roleService.findRolesByIDs(selectedRolesID));
-            userService.updateUser(user);
-        }
-
-        return redirectTo;
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }
