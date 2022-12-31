@@ -1,6 +1,8 @@
 import React, {FormEvent} from 'react';
 import {authorities} from "../../utils";
 import {Role, UserDetails} from "../../types";
+import {useAppDispatch} from "../../redux/store";
+import {updateUser} from "../../redux/user/thunks";
 
 interface EditModalProps {
     data: UserDetails | null;
@@ -18,6 +20,7 @@ const defaultFormFields: UserDetails = {
 
 const EditModal = ({data }: EditModalProps) => {
     const [fields, setFields] = React.useState(data || defaultFormFields);
+    const dispatch = useAppDispatch();
 
     React.useEffect(() => {
         setFields(data || defaultFormFields);
@@ -52,28 +55,30 @@ const EditModal = ({data }: EditModalProps) => {
         event.preventDefault();
 
 
-        const payload: any = {
+        const params: any = {
             ...fields,
             roles: authorities,
             authorities: undefined
         }
 
-        delete payload.authorities;
+        delete params.authorities;
+        //
+        // const response = await fetch("http://localhost:8080/api/admin/edit", {
+        //     method: "PUT",
+        //     body: JSON.stringify(payload),
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     }
+        // });
 
-        const response = await fetch("http://localhost:8080/api/admin/edit", {
-            method: "PUT",
-            body: JSON.stringify(payload),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
+        const { payload } = await dispatch(updateUser(params));
 
-        if (response.ok) {
+        if (payload.ok) {
             console.log("User was updated")
-            const updatedUser = await response.json();
+            const updatedUser = await payload.json();
 
         } else {
-            console.log("Error while updating user", response.json());
+            console.log("Error while updating user", payload.json());
             setFields(data);
         }
     }
