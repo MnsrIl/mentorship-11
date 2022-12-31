@@ -1,6 +1,8 @@
 import React, {FormEvent} from 'react';
 import Section from "../Section";
 import {authorities} from "../../utils";
+import {useAppDispatch} from "../../redux/store";
+import {addUser} from "../../redux/user/thunks";
 
 const formFields = {
     firstName: "",
@@ -15,6 +17,7 @@ const formFields = {
 
 const CreateUserTab = () => {
     const [fields, setFields] = React.useState(formFields);
+    const dispatch = useAppDispatch();
 
     const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = event.target;
@@ -38,22 +41,24 @@ const CreateUserTab = () => {
     const handleSubmitForm = async (event: FormEvent) => {
         event.preventDefault();
 
-        const validAuthorities = fields.roles.map(roleId => authorities.find(authority => authority.id === Number(roleId)))
+        const validAuthorities = fields.roles ? fields.roles.map(roleId => authorities.find(authority => authority.id === Number(roleId))).filter(Boolean) : []
 
-        const response = await fetch("http://localhost:8080/api/admin/create", {
-            method: "POST",
-            body: JSON.stringify({...fields, roles: validAuthorities}),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
+        // const response = await fetch("http://localhost:8080/api/admin/create", {
+        //     method: "POST",
+        //     body: JSON.stringify({...fields, roles: validAuthorities}),
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     }
+        // });
 
-        if (response.status === 201) {
+        const {payload} = await dispatch(addUser({...fields, roles: validAuthorities}))
+
+        if (payload.status === 201) {
             console.log("User was created")
 
             setFields(formFields);
         } else {
-            console.log("Error while creating user", response.json());
+            console.log("Error while creating user", payload.json());
         }
     }
 

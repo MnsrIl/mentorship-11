@@ -3,17 +3,27 @@ import UserInformationTab from "./Tabs/UserInformationTab";
 import CreateUserTab from "./Tabs/CreateUserTab";
 import AdminPanelTab from "./Tabs/AdminPanelTab";
 import {UserDetails} from "../types";
+import {useAppDispatch} from "../redux/store";
+import {fetchUsers} from "../redux/user/thunks";
+import {useSelector} from "react-redux";
+import {selectUsers} from "../redux/user/selectors";
 
 
 const Layout = () => {
-    const [users, setUsers] = React.useState<UserDetails[]>([]);
+    // const [users, setUsers] = React.useState<UserDetails[]>([]);
+    const dispatch = useAppDispatch();
+    const users = useSelector(selectUsers)
 
     React.useEffect(() => {
-        fetch("http://localhost:8080/api/admin")
-            .then((res) => res.json())
-            .then((data) => setUsers(data))
-            .catch((err) => console.log("Something went wrong: " + JSON.stringify(err)));
-    }, []);
+        dispatch(fetchUsers())
+    },[])
+
+    // React.useEffect(() => {
+    //     fetch("http://localhost:8080/api/admin")
+    //         .then((res) => res.json())
+    //         .then((data) => setUsers(data))
+    //         .catch((err) => console.log("Something went wrong: " + JSON.stringify(err)));
+    // }, []);
 
     return (
         <>

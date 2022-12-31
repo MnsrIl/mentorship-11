@@ -1,23 +1,26 @@
 import React from 'react';
 import { UserDetails } from "../../types";
 import {authorities, getPlainAuthorityInfo} from "../../utils";
+import {useAppDispatch} from "../../redux/store";
+import {removeUser} from "../../redux/user/thunks";
 
 interface DeleteModalProps {
     data: UserDetails | null;
 }
 
 const DeleteModal = ({ data }: DeleteModalProps) => {
+    const dispatch = useAppDispatch();
     if (data === null) return null;
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+        const {payload} = await dispatch(removeUser(data.id))
+        // const response = await fetch("http://localhost:8080/api/admin/delete/" + data.id, {
+        //     method: "DELETE"
+        // });
 
-        const response = await fetch("http://localhost:8080/api/admin/delete/" + data.id, {
-            method: "DELETE"
-        });
-
-        if (response.ok) {
-            const data = await response.text();
+        if (payload.ok) {
+            const data = await payload.text();
             console.log(data);
         }
     }
