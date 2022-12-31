@@ -27,16 +27,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         String ROLE_USER = "USER", ROLE_ADMIN = "ADMIN";
 
         http
-                .authorizeRequests()
-                .antMatchers("/admin/**").hasRole(ROLE_ADMIN)
-                .antMatchers("/user/**").hasAnyRole(ROLE_ADMIN, ROLE_USER)
-                .anyRequest().authenticated()
-                .and()
-                .formLogin().successHandler(successUserHandler)
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll();
+//                .authorizeRequests()
+//                .antMatchers("/admin/**").hasRole(ROLE_ADMIN)
+//                .antMatchers("/user/**").hasAnyRole(ROLE_ADMIN, ROLE_USER)
+//                .anyRequest().authenticated()
+//                .and()
+//                .formLogin()
+//                    .usernameParameter("email")
+//                .successHandler(successUserHandler)
+//                .permitAll()
+//                .and()
+//                .logout()
+//                .antMatchers("/api")
+//                .permitAll();
+//                .and()
+                .csrf().disable().cors();
     }
 
     @Bean

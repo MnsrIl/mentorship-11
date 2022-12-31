@@ -34,7 +34,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles;
 
     @Column(name = "age")
     private int age;
@@ -43,7 +43,7 @@ public class User implements UserDetails {
     }
 
     public User(Set<Role> roles, String lastName, String firstName, int age) {
-        this.roles.addAll(roles);
+        this.roles = roles;
         this.age = age;
         this.lastName = lastName;
         this.firstName = firstName;
@@ -98,8 +98,8 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    public void addAuthorities(Role ...roles) {
-        this.roles.addAll(List.of(roles));
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public String getFirstName() {
