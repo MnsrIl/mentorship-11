@@ -102,6 +102,8 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
+    public void setAuthorities(Set<Role> roles) { this.roles = roles; }
+
     public String getFirstName() {
         return firstName;
     }

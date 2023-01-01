@@ -50,9 +50,9 @@ public class AdminController {
 
     @PostMapping("/create")
     public ResponseEntity<User> createNewUser(@RequestBody User user) {
-        userService.createUser(user);
+        User createdUser = userService.createUser(user);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     @PutMapping("/edit")

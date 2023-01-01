@@ -13,8 +13,8 @@ const TableRow = ({data, hasActions, onDelete, onUpdate}: TableRowProps) => {
     return (
         <tr>
             <td>{data.id}</td>
-            <td>{data.lastName}</td>
             <td>{data.firstName}</td>
+            <td>{data.lastName}</td>
             <td>{data.age}</td>
             <td>{data.email}</td>
             <td>{getPlainAuthorityInfo(...data.authorities)}</td>

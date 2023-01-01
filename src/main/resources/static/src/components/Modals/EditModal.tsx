@@ -18,7 +18,7 @@ const defaultFormFields: UserDetails = {
     lastName: ""
 }
 
-const EditModal = ({data }: EditModalProps) => {
+const EditModal = ({data}: EditModalProps) => {
     const [fields, setFields] = React.useState(data || defaultFormFields);
     const dispatch = useAppDispatch();
 
@@ -54,33 +54,7 @@ const EditModal = ({data }: EditModalProps) => {
     const handleSubmitForm = async (event: FormEvent) => {
         event.preventDefault();
 
-
-        const params: any = {
-            ...fields,
-            roles: authorities,
-            authorities: undefined
-        }
-
-        delete params.authorities;
-        //
-        // const response = await fetch("http://localhost:8080/api/admin/edit", {
-        //     method: "PUT",
-        //     body: JSON.stringify(payload),
-        //     headers: {
-        //         "Content-Type": "application/json"
-        //     }
-        // });
-
-        const { payload } = await dispatch(updateUser(params));
-
-        if (payload.ok) {
-            console.log("User was updated")
-            const updatedUser = await payload.json();
-
-        } else {
-            console.log("Error while updating user", payload.json());
-            setFields(data);
-        }
+        await dispatch(updateUser(fields));
     }
 
     return (
@@ -99,7 +73,7 @@ const EditModal = ({data }: EditModalProps) => {
                             <div className="row justify-content-center">
                                 <div className="col-md-8">
                                     <label htmlFor="editId">ID</label>
-                                    <input disabled type="text" className="form-control" id="editId" value="1"/>
+                                    <input disabled type="text" className="form-control" id="editId" value={fields.id}/>
                                 </div>
                             </div>
                             <div className="row justify-content-center">

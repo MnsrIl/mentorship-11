@@ -14,15 +14,7 @@ const DeleteModal = ({ data }: DeleteModalProps) => {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        const {payload} = await dispatch(removeUser(data.id))
-        // const response = await fetch("http://localhost:8080/api/admin/delete/" + data.id, {
-        //     method: "DELETE"
-        // });
-
-        if (payload.ok) {
-            const data = await payload.text();
-            console.log(data);
-        }
+        await dispatch(removeUser(data.id))
     }
 
     return (

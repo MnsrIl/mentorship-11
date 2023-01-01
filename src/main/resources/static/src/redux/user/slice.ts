@@ -4,24 +4,24 @@ import {addUser, fetchUsers, removeUser, updateUser} from "./thunks";
 
 const initialState:userState = {
     items:[],
-    loading:false,
-    error:false
+    loading: false,
+    error: false
 }
 
 const userSlice = createSlice({
     name:'user',
     initialState,
-    reducers:{},
+    reducers: {},
     extraReducers:(builder => {
         builder.addCase(fetchUsers.pending, (state) => {
             state.loading = true
             state.error = false
         });
         builder.addCase(fetchUsers.fulfilled, (state, action) => {
-            state.loading = false
-            state.items = action.payload
+            state.loading = false;
+            state.items = action.payload;
         });
-        builder.addCase(fetchUsers.pending, (state) => {
+        builder.addCase(fetchUsers.rejected, (state) => {
             state.error = true
             state.loading = false;
         });
@@ -33,7 +33,7 @@ const userSlice = createSlice({
             state.loading = false
             state.items.push(action.payload)
         });
-        builder.addCase(addUser.pending, (state) => {
+        builder.addCase(addUser.rejected, (state) => {
             state.error = true
             state.loading = false;
         });
@@ -43,9 +43,9 @@ const userSlice = createSlice({
         });
         builder.addCase(removeUser.fulfilled, (state, action) => {
             state.loading = false
-            state.items = state.items.filter(item => item.id !== action.payload.id)
+            state.items = state.items.filter(item => item.id !== action.payload)
         });
-        builder.addCase(removeUser.pending, (state) => {
+        builder.addCase(removeUser.rejected, (state) => {
             state.error = true
             state.loading = false;
         });
@@ -55,15 +55,13 @@ const userSlice = createSlice({
         });
         builder.addCase(updateUser.fulfilled, (state, action) => {
             state.loading = false
-            state.items.map(item => item.id === action.payload.id)
+            state.items = state.items.map(item => item.id === action.payload.id ? action.payload : item);
         });
-        builder.addCase(updateUser.pending, (state) => {
+        builder.addCase(updateUser.rejected, (state) => {
             state.error = true
             state.loading = false;
         });
     })
-
-
 })
 
 export default userSlice.reducer;

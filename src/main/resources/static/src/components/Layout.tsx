@@ -2,28 +2,22 @@ import React from 'react';
 import UserInformationTab from "./Tabs/UserInformationTab";
 import CreateUserTab from "./Tabs/CreateUserTab";
 import AdminPanelTab from "./Tabs/AdminPanelTab";
-import {UserDetails} from "../types";
 import {useAppDispatch} from "../redux/store";
 import {fetchUsers} from "../redux/user/thunks";
 import {useSelector} from "react-redux";
-import {selectUsers} from "../redux/user/selectors";
+import {selectAuthUser} from "../redux/auth/selectors";
+import {isAdmin} from "../utils";
 
 
 const Layout = () => {
-    // const [users, setUsers] = React.useState<UserDetails[]>([]);
     const dispatch = useAppDispatch();
-    const users = useSelector(selectUsers)
+    const authUser = useSelector(selectAuthUser);
 
     React.useEffect(() => {
         dispatch(fetchUsers())
-    },[])
+    }, []);
 
-    // React.useEffect(() => {
-    //     fetch("http://localhost:8080/api/admin")
-    //         .then((res) => res.json())
-    //         .then((data) => setUsers(data))
-    //         .catch((err) => console.log("Something went wrong: " + JSON.stringify(err)));
-    // }, []);
+    if (authUser === null) return null;
 
     return (
         <>
@@ -32,45 +26,51 @@ const Layout = () => {
                     <div style={{width: "15%"}} className="nav h-100 pt-4 bg-white flex-column nav-pills"
                          id="v-pills-tab" role="tablist"
                          aria-orientation="vertical">
-                        <button className="nav-link active text-start" id="v-pills-admin-tab" data-bs-toggle="pill"
-                                data-bs-target="#v-pills-admin"
-                                type="button" role="tab" aria-controls="v-pills-admin" aria-selected="true">
-                            Admin
-                        </button>
-                        <button className="nav-link text-start" id="v-pills-user_details-tab" data-bs-toggle="pill"
+                        {isAdmin(authUser) &&
+                            <button className="nav-link text-start active" id="v-pills-admin-tab" data-bs-toggle="pill"
+                                    data-bs-target="#v-pills-admin"
+                                    type="button" role="tab" aria-controls="v-pills-admin" aria-selected="true">
+                                Admin
+                            </button>
+                        }
+                        <button className={`nav-link text-start ${isAdmin(authUser) ? "" : "active"}`}
+                                id="v-pills-user_details-tab" data-bs-toggle="pill"
                                 data-bs-target="#v-pills-user_details"
                                 type="button" role="tab" aria-controls="v-pills-user_details" aria-selected="false">
                             User
                         </button>
                     </div>
                     <div style={{flex: 1}} className="tab-content p-4" id="v-pills-tabContent">
-                        <div className="tab-pane fade show active" id="v-pills-admin" role="tabpanel"
-                             aria-labelledby="v-pills-admin-tab">
-                            <h1>Admin panel</h1>
-                            <nav>
-                                <ul className="nav nav-tabs" role="tablist">
-                                    <li className="nav-item" role="presentation">
-                                        <button className="nav-link active" id="all-users-tab" data-bs-toggle="tab"
-                                                data-bs-target="#all-users" type="button" role="tab"
-                                                aria-controls="all-users"
-                                                aria-selected="true">Users Table
-                                        </button>
-                                    </li>
-                                    <li className="nav-item" role="presentation">
-                                        <button className="nav-link" id="create-user-tab" data-bs-toggle="tab"
-                                                data-bs-target="#create-user" type="button" role="tab"
-                                                aria-controls="create-user"
-                                                aria-selected="false">New User
-                                        </button>
-                                    </li>
-                                </ul>
-                            </nav>
-                            <div className="tab-content" id="myTabContent">
-                                <AdminPanelTab data={users}/>
-                                <CreateUserTab />
+                        {isAdmin(authUser) &&
+                            <div className="tab-pane fade show active" id="v-pills-admin" role="tabpanel"
+                                 aria-labelledby="v-pills-admin-tab">
+                                <h1>Admin panel</h1>
+                                <nav>
+                                    <ul className="nav nav-tabs" role="tablist">
+                                        <li className="nav-item" role="presentation">
+                                            <button className="nav-link active" id="all-users-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#all-users" type="button" role="tab"
+                                                    aria-controls="all-users"
+                                                    aria-selected="true">Users Table
+                                            </button>
+                                        </li>
+                                        <li className="nav-item" role="presentation">
+                                            <button className="nav-link" id="create-user-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#create-user" type="button" role="tab"
+                                                    aria-controls="create-user"
+                                                    aria-selected="false">
+                                                New User
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                                <div className="tab-content" id="myTabContent">
+                                    <AdminPanelTab/>
+                                    <CreateUserTab/>
+                                </div>
                             </div>
-                        </div>
-                        <UserInformationTab/>
+                        }
+                        <UserInformationTab />
                     </div>
                 </div>
             </main>

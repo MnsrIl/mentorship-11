@@ -43,22 +43,12 @@ const CreateUserTab = () => {
 
         const validAuthorities = fields.roles ? fields.roles.map(roleId => authorities.find(authority => authority.id === Number(roleId))).filter(Boolean) : []
 
-        // const response = await fetch("http://localhost:8080/api/admin/create", {
-        //     method: "POST",
-        //     body: JSON.stringify({...fields, roles: validAuthorities}),
-        //     headers: {
-        //         "Content-Type": "application/json"
-        //     }
-        // });
+        const data = await dispatch(addUser({...fields, roles: validAuthorities}))
 
-        const {payload} = await dispatch(addUser({...fields, roles: validAuthorities}))
-
-        if (payload.status === 201) {
-            console.log("User was created")
-
+        if (data != null) {
             setFields(formFields);
         } else {
-            console.log("Error while creating user", payload.json());
+            console.log("Error while creating user");
         }
     }
 

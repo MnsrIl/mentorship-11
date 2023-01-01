@@ -1,16 +1,17 @@
 import React from 'react';
 import Section from "../Section";
 import Table from "../Table";
-import {UserDetails} from "../../types";
-// import {useDispatch} from "react-redux";
-// import {getUsers} from "../../store/users/thunks";
+import {useSelector} from "react-redux";
+import {selectUsers} from "../../redux/user/selectors";
 
-const AdminPanelTab = ({ data }: { data: UserDetails[] }) => {
+const AdminPanelTab = () => {
+    const users = useSelector(selectUsers);
+
     return (
         <div className="tab-pane fade show active" id="all-users" role="tabpanel"
              aria-labelledby="all-users-tab">
             <Section title="Admin panel">
-                <Table data={data} hasActions />
+                <Table data={users} hasActions />
             </Section>
         </div>
     );
